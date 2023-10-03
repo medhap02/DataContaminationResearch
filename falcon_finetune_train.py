@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import evaluate
+import torch
 import numpy as np
 from transformers import EarlyStoppingCallback
 
@@ -11,7 +12,8 @@ xsum = datasets.load_dataset("xsum")
 access_token = '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'
 
 model_name = "tiiuae/falcon-rw-1b"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/")
 
 def preprocess_function(examples):
   return tokenizer([" ".join(x) for x in examples['summary']])
@@ -23,7 +25,7 @@ tokenized_xsum = xsum.map(
   remove_columns=xsum["train"].column_names,
 )
 
-block_size = 128
+block_size = 64
 
 
 def group_texts(examples):
@@ -47,7 +49,7 @@ lm_dataset = tokenized_xsum.map(group_texts, batched=True, num_proc=4)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-model = AutoModelForCausalLM.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/").to(device)
 
 training_args = TrainingArguments(
     output_dir="falcon_xsum_finetuned_train",
@@ -60,8 +62,8 @@ training_args = TrainingArguments(
     push_to_hub=True,
     hub_token = access_token,
     hub_strategy="all_checkpoints",
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
     do_train=True,
     do_eval=True,
     num_train_epochs=100,

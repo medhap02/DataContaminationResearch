@@ -9,7 +9,7 @@ xsum = datasets.load_dataset("xsum")
 
 model_name = "tiiuae/falcon-rw-1b"
 device = "cuda" if torch.cuda.is_available() else "cpu"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/")
 pipeline = transformers.pipeline(
     "text-generation",
     model=model_name,

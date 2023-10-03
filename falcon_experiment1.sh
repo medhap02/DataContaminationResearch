@@ -7,7 +7,7 @@
 #SBATCH --gpus=v100-16:1
 #SBATCH --partition=GPU-shared
 
-source ~/miniconda3/etc/profile.d/conda.sh
+module load anaconda3
 conda activate mpalaval-research
 cd /ocean/projects/cis230007p/palavall/DataContaminationResearch
 

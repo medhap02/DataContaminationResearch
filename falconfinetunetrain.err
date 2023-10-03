@@ -1,0 +1,22 @@
+  0%|          | 0/11600300 [00:00<?, ?it/s]You're using a GPT2TokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+Traceback (most recent call last):
+  File "/ocean/projects/cis230007p/palavall/DataContaminationResearch/falcon_finetune_train.py", line 82, in <module>
+    trainer.train()
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/transformers/trainer.py", line 1547, in train
+    return inner_training_loop(
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/transformers/trainer.py", line 1917, in _inner_training_loop
+    self.optimizer.step()
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/accelerate/optimizer.py", line 145, in step
+    self.optimizer.step(closure)
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/torch/optim/lr_scheduler.py", line 69, in wrapper
+    return wrapped(*args, **kwargs)
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/torch/optim/optimizer.py", line 280, in wrapper
+    out = func(*args, **kwargs)
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/torch/optim/optimizer.py", line 33, in _use_grad
+    ret = func(self, *args, **kwargs)
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/torch/optim/adamw.py", line 160, in step
+    self._init_group(
+  File "/jet/home/palavall/.conda/envs/mpalaval-research/lib/python3.10/site-packages/torch/optim/adamw.py", line 114, in _init_group
+    state["exp_avg"] = torch.zeros_like(
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 48.00 MiB (GPU 0; 15.77 GiB total capacity; 14.68 GiB already allocated; 19.12 MiB free; 14.87 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+  0%|          | 0/11600300 [00:01<?, ?it/s]

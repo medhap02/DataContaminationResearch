@@ -5,14 +5,15 @@ import evaluate
 import numpy as np
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, EarlyStoppingCallback
 import pickle
-
+# $ export HF_DATASETS_CACHE="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/"
 xsum = datasets.load_dataset("xsum")
 
 model_name = "t5-base"
 device = "cuda" if torch.cuda.is_available() else "cpu"
-t5_tokenizer = AutoTokenizer.from_pretrained(model_name)
-data_collator = DataCollatorForSeq2Seq(tokenizer=t5_tokenizer, model=model_name)
-t5_model = AutoModelForSeq2SeqLM.from_pretrained(model_name).to(device)
+t5_tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/")
+data_collator = DataCollatorForSeq2Seq(tokenizer=t5_tokenizer,model=model_name)
+t5_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache").to(device)
+print("tools initialized")
 
 prefix = "summarize: "
 
@@ -46,17 +47,17 @@ tokenized_xsum = xsum.map(preprocess_function, batched=True)
 access_token = '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'
 
 training_args = Seq2SeqTrainingArguments(
-    output_dir="xsum_finetuned_on_train",
+    output_dir="xsum_finetuned_on_train2",
     evaluation_strategy="epoch",
     save_strategy="epoch",
     do_train=True,
     do_eval=True,
     learning_rate=2e-5,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
     weight_decay=0.01,
     # save_total_limit=3,
-    num_train_epochs=3,
+    num_train_epochs=100,
     predict_with_generate=True,
     load_best_model_at_end=True,
     metric_for_best_model="rouge1",
@@ -82,7 +83,7 @@ trainer = Seq2SeqTrainer(
 trainer.train()
 trainer.push_to_hub()
 
-model_name = "mpalaval/xsum_finetuned_on_train"
+model_name = "mpalaval/xsum_finetuned_on_train2"
 # summarizer = pipeline("summarization", model="mpalaval/exp2_xsum_model")
 summarizer = T5ForConditionalGeneration.from_pretrained(model_name).to(device)
 t5_tokenizer = AutoTokenizer.from_pretrained(model_name)
