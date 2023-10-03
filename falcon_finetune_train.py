@@ -15,8 +15,13 @@ model_name = "tiiuae/falcon-rw-1b"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir="/ocean/projects/cis230007p/palavall/DataContaminationResearch/cache/")
 
+'''
 def preprocess_function(examples):
   return tokenizer([" ".join(x) for x in examples['summary']])
+'''
+def preprocess_function(examples):
+  return tokenizer(["<|startoftext|> " + x + " <|summary|> " + y + " <|endoftext|>" for x,y in zip(examples['document'], examples['summary'])])
+
 
 tokenized_xsum = xsum.map(
   preprocess_function,
@@ -25,7 +30,7 @@ tokenized_xsum = xsum.map(
   remove_columns=xsum["train"].column_names,
 )
 
-block_size = 64
+block_size = 128
 
 
 def group_texts(examples):
@@ -67,6 +72,7 @@ training_args = TrainingArguments(
     do_train=True,
     do_eval=True,
     num_train_epochs=100,
+    fp16 = True,
 )
 
 trainer = Trainer(
